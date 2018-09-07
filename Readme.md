@@ -15,8 +15,12 @@ Included:
 
 ## Walking on Flat Ground
 
+(click for video)
+
 [![Strandbeest robot visualization](https://user-images.githubusercontent.com/591886/45247495-16333400-b2d6-11e8-932a-c50667d9d52d.png)](https://youtu.be/1MUHuovdOEc)
 
 ## Walking Passively Downhill
+
+(click for video)
 
 [![Strandbeest on a hill](https://user-images.githubusercontent.com/591886/45247573-82159c80-b2d6-11e8-810e-61c442d8aa10.png)](https://youtu.be/T1frKeoPa_4)
