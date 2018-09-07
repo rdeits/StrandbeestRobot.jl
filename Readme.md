@@ -13,7 +13,7 @@ Included:
 
 # Examples
 
-Visualization powered by [MeshCat.jl](https://github.com/rdeits/StrandbeestRobot.jl) and [MeshCatMechanisms.jl](https://github.com/JuliaRobotics/MeshCatMechanisms.jl).
+Visualization powered by [MeshCat.jl](https://github.com/rdeits/MeshCat.jl) and [MeshCatMechanisms.jl](https://github.com/JuliaRobotics/MeshCatMechanisms.jl).
 
 ## Walking on Flat Ground
 
