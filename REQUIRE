@@ -2,7 +2,7 @@ julia 0.7
 
 LightXML
 Optim
-RigidBodyDynamics
+RigidBodyDynamics 1.0.2
 RigidBodySim
 StaticArrays
 MeshCatMechanisms
