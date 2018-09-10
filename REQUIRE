@@ -1,8 +1,8 @@
 julia 0.7
 
-LightXML
-Optim
-RigidBodyDynamics
-RigidBodySim
-StaticArrays
-MeshCatMechanisms
+LightXML 0.8
+Optim 0.17
+RigidBodyDynamics 1.0.2
+RigidBodySim 1.0
+StaticArrays 0.8.3
+MeshCatMechanisms 0.2

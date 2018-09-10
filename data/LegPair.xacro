@@ -10,7 +10,7 @@
  <xacro:include filename="LegAssembly.xacro" />
  <xacro:property name="pi" value="3.1415926535897931" />
 
-  <xacro:macro name="strandbeest_leg_pair" params="prefix">
+  <xacro:macro name="strandbeest_leg_pair" params="prefix material">
 
   <link name="${prefix}_bar_l">
     <inertial>
@@ -23,7 +23,7 @@
       <geometry>
         <cylinder length="0.078" radius="0.01"/>
       </geometry>
-      <material name="orange"/>
+      <material name="${material}"/>
     </visual>
   </link>
 
@@ -38,7 +38,7 @@
       <geometry>
         <cylinder length="0.76" radius="0.01"/>
       </geometry>
-      <material name="orange"/>
+      <material name="${material}"/>
     </visual>
   </link>
 
@@ -60,11 +60,11 @@
       <geometry>
         <cylinder length="0.15" radius="0.01"/>
       </geometry>
-      <material name="orange"/>
+      <material name="${material}"/>
     </visual>
   </link>
 
-  <xacro:strandbeest_leg prefix="${prefix}_leg1">
+  <xacro:strandbeest_leg prefix="${prefix}_leg1" material="${material}">
   </xacro:strandbeest_leg>
 
   <loop_joint name="${prefix}_leg1_loop_a_c" type="continuous">
@@ -80,7 +80,7 @@
     <origin rpy="0 0 0" xyz="0 0 0.15"/>
   </joint>
 
-  <xacro:strandbeest_leg prefix="${prefix}_leg2">
+  <xacro:strandbeest_leg prefix="${prefix}_leg2" material="${material}">
   </xacro:strandbeest_leg>
 
   <loop_joint name="${prefix}_leg2_loop_a_c" type="continuous">
