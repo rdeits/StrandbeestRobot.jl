@@ -29,7 +29,7 @@ function mechanism(::Type{T} = Float64;
 
     add_foot_contacts!(mechanism, contact_model)
     if add_flat_ground
-        add_environment_primitive!(mechanism, 
+        add_environment_primitive!(mechanism,
             HalfSpace3D(
                 Point3D(root_frame(mechanism), 0., 0, 0),
                 FreeVector3D(root_frame(mechanism), 0., 0, 1)))
@@ -65,7 +65,7 @@ function add_loop_joints!(mechanism::Mechanism{T}, urdf::AbstractString) where T
             joint_pose = H1,
             successor_pose = inv(H2))
     end
-end   
+end
 
 """
 Return a function which maps a configuration vector
@@ -95,37 +95,60 @@ function add_foot_contacts!(mechanism::Mechanism, contactmodel=default_contact_m
             point = Point3D(frame, 0, 0, 0.49)
             add_contact_point!(body, ContactPoint(
                 point, contactmodel))
-            
+
         end
     end
 end
 
-function solve_initial_configuration!(state::MechanismState)
-    # Find an initial state of the robot which correctly aligns all 
+function solve_initial_configuration!(state::MechanismState{T}) where T
+    # Find an initial state of the robot which correctly aligns all
     # the loop joints.
     mechanism = state.mechanism
 
-    # We do this before adding the contact points to work around 
+    # We do this before adding the contact points to work around
     # https://github.com/JuliaRobotics/RigidBodyDynamics.jl/issues/483
 
-    # First, initialize the state with a configuration within the 
+    # First, initialize the state with a configuration within the
     # joint limits:
-    bounds = collect(Iterators.flatten(rbd.position_bounds.(tree_joints(mechanism))))
-    lb = rbd.lower.(bounds)
-    ub = rbd.upper.(bounds);
-    set_configuration!(state, clamp.(configuration(state), lb, ub))
+    lb = similar(configuration(state))
+    ub = similar(configuration(state))
+    for joint in tree_joints(mechanism)
+        lb_joint = lb[joint]
+        ub_joint = ub[joint]
+        if isfloating(joint)
+            # use identity transform for floating joint
+            tf = one(Transform3D{T}, frame_after(joint), frame_before(joint))
+            set_configuration!(state, joint, tf)
+            # Optim can't handle equal bounds, so give it a bit of wiggle room
+            lb_joint .= configuration(state, joint) .- 1e-3
+            ub_joint .= configuration(state, joint) .+ 1e-3
+        else
+            lb_joint .= rbd.lower.(position_bounds(joint))
+            ub_joint .= rbd.upper.(position_bounds(joint))
+        end
+    end
+    q = configuration(state)
+    for i in eachindex(q)
+        if isfinite(lb[i]) && isfinite(ub[i])
+            q[i] = (lb[i] + ub[i]) / 2
+        else
+            q[i] = clamp(0, lb[i], ub[i])
+        end
+    end
+    setdirty!(state)
 
     # Use Optim's Fminbox to minimize the loop joint error within
     # the joint limits:
     cost = loop_joint_error(mechanism)
-    result = Optim.optimize(cost, lb, ub, 
-        Vector(configuration(state)), 
+    result = Optim.optimize(cost, lb, ub,
+        Vector(configuration(state)),
         Fminbox(LBFGS()), autodiff=:forward)
 
     # Verify that we've actually closed all the loops
     @assert Optim.minimum(result) < 1e-9
 
     set_configuration!(state, Optim.minimizer(result))
+    normalize_configuration!(state)
     state
 end
 

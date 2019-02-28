@@ -9,6 +9,9 @@ using NBInclude
         state = MechanismState(mechanism)
         cost = StrandbeestRobot.loop_joint_error(mechanism)
         StrandbeestRobot.solve_initial_configuration!(state)
+        for joint in tree_joints(mechanism)
+            @test RigidBodyDynamics.is_configuration_normalized(joint, configuration(state, joint); atol=1e-8)
+        end
         @test cost(configuration(state)) <= 1e-9
     end
 
